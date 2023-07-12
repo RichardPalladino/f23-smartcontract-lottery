@@ -5,6 +5,7 @@ pragma solidity ^0.8.18;
 import {Script,console} from "forge-std/Script.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
+import {LinkToken} from "../test/mocks/LinkToken.sol";
 
 contract CreateSubscription is Script {
     function createSubscriptionUsingConfig() public returns (uint64) {
@@ -35,15 +36,23 @@ contract FundSubscription is Script {
 
     function fundSubscriptionUsingConfig() public payable {
         HelperConfig helperConfig = new HelperConfig();
-        (,, address vrfCoordinator,, uint64 subId,,) = helperConfig.activeNetworkConfig();
-        fundSubscription(vrfCoordinator);
+        (,, address vrfCoordinator,, uint64 subId,,address linkToken) = helperConfig.activeNetworkConfig();
+        fundSubscription(vrfCoordinator, subId, linkToken);
     }
 
-    function fundSubscription(address _vrfCoordinator) public payable {
-        console.log("Funding subscription on ChainId: %s", block.chainid);
-        vm.startBroadcast();
-        VRFCoordinatorV2Mock(_vrfCoordinator).fundSubscription{value: msg.value}();
-        vm.stopBroadcast();
+    function fundSubscription(address _vrfCoordinator, uint64 _subId, address _linkToken) public {
+        console.log("Funding subscription %s on ChainId %s using %s", _subId, block.chainid, _vrfCoordinator);
+        if (block.chainid == 31337) {
+            // console.log("Skipping funding on local chain");
+            vm.startBroadcast();
+            VRFCoordinatorV2Mock(_vrfCoordinator).fundSubscription(_subId, FUND_AMOUNT);
+            vm.stopBroadcast(); 
+            // return;
+        } else {
+            vm.startBroadcast();
+            LinkToken(_linkToken).transferAndCall(_vrfCoordinator, FUND_AMOUNT, abi.encode(_subId));
+            vm.stopBroadcast();
+        }
         console.log("Funded subscription");
     }
 
@@ -51,4 +60,11 @@ contract FundSubscription is Script {
         fundSubscriptionUsingConfig();
     }
 
+}
+
+
+contract AddConsumer is Script {
+    function run() external {
+        
+    }
 }
