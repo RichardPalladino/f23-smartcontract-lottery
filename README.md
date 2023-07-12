@@ -14,10 +14,19 @@ Implementation of a proveably random smart contract lottery.
     * Chainlink VRF for randomness
     * Chainlink Automation for time-based trigger to draw winner
 
+## Tests!
+
+1. Write some deploy scripts
+2. Write our tests
+    * work on a local chain
+    * work on a forked testnet
+    * work on a forked mainnet
+
 ## Solidity code layout
 
 ```
 // Layout of Contract:
+// license identifier
 // version
 // imports
 // errors
