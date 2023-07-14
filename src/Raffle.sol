@@ -48,6 +48,7 @@ contract Raffle is VRFConsumerBaseV2 {
      */
     event EnteredRaffle(address indexed player);
     event WinnerPicked(address indexed winner);
+    event RequestedRaffleWinner(uint256 indexed requestId);
 
     constructor(
         uint256 _entrance_fee,
@@ -124,13 +125,15 @@ contract Raffle is VRFConsumerBaseV2 {
         }
         s_raffleState = RaffleState.CALCULATING;
         // uint256 requestId =
-        VRFCoordinatorV2Interface(i_coordinatorAddress).requestRandomWords(
+        uint256 requestId = VRFCoordinatorV2Interface(i_coordinatorAddress).requestRandomWords(
             i_gasHash, // gas lane
             i_subscriptionId, // what I used to fund the subscription
             REQUEST_CONFIRMATIONS,
             i_callbackGasLimit,
             NUM_WORDS
         );
+
+        emit RequestedRaffleWinner(requestId);
     }
 
     function pickWinner() public {
