@@ -33,6 +33,7 @@ contract Raffle is VRFConsumerBaseV2 {
     bytes32 private immutable i_gasHash;
     address private immutable i_coordinatorAddress;
     RaffleState private s_raffleState;
+    address payable private s_recentWinner;
     uint64 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
     uint32 private constant NUM_WORDS = 1;
@@ -159,6 +160,7 @@ contract Raffle is VRFConsumerBaseV2 {
         uint256 index = randomWords[0] % s_players.length;
         address payable winner = s_players[index];
         winner.transfer(address(this).balance);
+        s_recentWinner = winner;
         s_raffleState = RaffleState.OPEN;
 
         s_players = new address payable[](0);
@@ -179,5 +181,13 @@ contract Raffle is VRFConsumerBaseV2 {
 
     function getPlayers() external view returns (address payable[] memory) {
         return s_players;
+    }
+
+    function getRecentWinner() external view returns (address payable) {
+        return s_recentWinner;
+    }
+    
+    function getLastTimestamp() external view returns (uint256) {
+        return s_lastTimestamp;
     }
 }
