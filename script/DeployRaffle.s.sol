@@ -10,6 +10,7 @@ import {CreateSubscription, FundSubscription, AddConsumer} from "./Interactions.
 contract DeployRaffle is Script {
     function run() external returns (Raffle, HelperConfig) {
         HelperConfig helperConfig = new HelperConfig();
+        AddConsumer addConsumer = new AddConsumer();
         (
             uint256 entranceFee,
             uint256 interval,
@@ -17,7 +18,8 @@ contract DeployRaffle is Script {
             bytes32 gasHash,
             uint64 subscriptionId,
             uint32 callbackGasLimit,
-            address linkToken
+            address linkToken,
+            uint256 deployerKey
         ) = helperConfig.activeNetworkConfig();
 
         if (subscriptionId == 0) {
@@ -42,7 +44,7 @@ contract DeployRaffle is Script {
 
         
         AddConsumer addConsumer = new AddConsumer();
-        addConsumer.addConsumer(subscriptionId, vrfCoordinator, address(raffle));
+        addConsumer.addConsumer(subscriptionId, vrfCoordinator, address(raffle), deployerKey);
 
         return (raffle, helperConfig);
     }

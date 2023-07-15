@@ -26,6 +26,7 @@ contract RaffleTest is DeployRaffle, Test {
     uint64 subscriptionId;
     uint32 callbackGasLimit;
     address linkToken;
+    uint256 deployerKey;
 
     address public PLAYER = makeAddr("player");
 
@@ -44,7 +45,7 @@ contract RaffleTest is DeployRaffle, Test {
     function setUp() external {
         DeployRaffle deployer = new DeployRaffle();
         (raffle, helperConfig) = deployer.run();
-        (entranceFee, interval, vrfCoordinator, gasHash, subscriptionId, callbackGasLimit, linkToken) =
+        (entranceFee, interval, vrfCoordinator, gasHash, subscriptionId, callbackGasLimit, linkToken, deployerKey) =
             helperConfig.activeNetworkConfig();
         vm.deal(PLAYER, STARTING_USER_BALANCE);
     }
