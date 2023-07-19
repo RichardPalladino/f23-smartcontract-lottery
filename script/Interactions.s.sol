@@ -5,19 +5,20 @@ pragma solidity ^0.8.18;
 import {Script,console} from "forge-std/Script.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
+// import {VRFCoordinatorV2Mock} from "../test/mocks/VRFCoordinatorV2Mock.sol";
 import {LinkToken} from "../test/mocks/LinkToken.sol";
 import {DevOpsTools} from "../lib/foundry-devops/src/DevOpsTools.sol";
 
 contract CreateSubscription is Script {
     function createSubscriptionUsingConfig() public returns (uint64) {
         HelperConfig helperConfig = new HelperConfig();
-        (,, address vrfCoordinator,,,,,) = helperConfig.activeNetworkConfig();
-        return createSubscription(vrfCoordinator);
+        (,, address vrfCoordinator,,,,, uint256 deployerKey) = helperConfig.activeNetworkConfig();
+        return createSubscription(vrfCoordinator, deployerKey);
     }
 
-    function createSubscription(address _vrfCoordinator) public returns (uint64) {
+    function createSubscription(address _vrfCoordinator, uint256 _deployerKey) public returns (uint64) {
         console.log("Creating subscription on ChainId: %s", block.chainid);
-        vm.startBroadcast();
+        vm.startBroadcast(_deployerKey);
         uint64 subscriptionId = VRFCoordinatorV2Mock(_vrfCoordinator).createSubscription();
         vm.stopBroadcast();
         console.log("Created subscriptionId: %s", subscriptionId);

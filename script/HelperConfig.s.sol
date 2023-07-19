@@ -47,7 +47,7 @@ contract HelperConfig is Script {
             return activeNetworkConfig;
         }
         vm.startBroadcast();
-        VRFCoordinatorV2Mock vrfCoordinator = new VRFCoordinatorV2Mock(uint96(0.25 ether), uint96(1e9));
+        VRFCoordinatorV2Mock vrfCoordinator = new VRFCoordinatorV2Mock(uint96(0.25 ether) /* baseFee */ , uint96(1e9) /* linkGasPrice */ );
         LinkToken linkToken = new LinkToken();
         vm.stopBroadcast();
 
