@@ -35,7 +35,7 @@ contract HelperConfig is Script {
             interval: 60,
             vrfCoordinator: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,
             gasHash: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
-            subscriptionId: 3637,
+            subscriptionId: /* 3637 */ 0,
             callbackGasLimit: 500000,
             linkToken: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
             deployerKey: vm.envUint("SEPOLIA_PRIVATE_KEY")
