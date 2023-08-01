@@ -4,37 +4,51 @@ pragma solidity ^0.8.18;
 
 
 import {Script,console} from "forge-std/Script.sol";
+import {SolveChallenge} from "../src/SolveChallenge.sol";
+
+interface IERC721Receiver {
+    /**
+     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+     * by `operator` from `from`, this function is called.
+     *
+     * It must return its Solidity selector to confirm the token transfer.
+     * If any other value is returned or the interface is not implemented by the recipient, the transfer will be reverted.
+     *
+     * The selector can be obtained in Solidity with `IERC721Receiver.onERC721Received.selector`.
+     */
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes calldata data
+    ) external returns (bytes4);
+}
 
 interface Challenge {
     function solveChallenge(uint256 randomGuess, string memory yourTwitterHandle) external;
 }
 
-contract SolveChallenge is Script {
+contract SolveChallengeScript is Script {
     address private userAddress;
     address private challengeAddress;
+    uint256 private tokenId;
+    address private NFTAddress;
 
     function run() external {
-        if (block.chainid == 11155111) {
-            challengeAddress = 0x33e1fD270599188BB1489a169dF1f0be08b83509;
-        } else {
-            challengeAddress = 0xdF7cdFF0c5e85c974D6377244D9A0CEffA2b7A86;
-        }        
-        solveChallenge(challengeAddress);
+        solveChallenge();
     }
-    function solveChallenge(address _challengeAddress) public {
-        uint256 privateKey = vm.envUint("SEPOLIA_PRIVATE_KEY");
-        userAddress = vm.addr(privateKey);
+    function solveChallenge() public {
         console.log("Attempting to solve challenge on blockchain # %s", block.chainid);
         vm.startBroadcast();
-            // address msgSender = msg.sender;
-            console.log("Current address: %s", userAddress);
-            console.log("Challenge address: %s", _challengeAddress);
-            console.log("This address: %s", address(this));
-            uint256 guess = uint256(keccak256(abi.encodePacked(userAddress, block.prevrandao, block.timestamp))) % 100000;
-            console.log("Guess: %s", guess);
-            Challenge challenge = Challenge(_challengeAddress);
-            vm.prank(userAddress);
-            challenge.solveChallenge(guess, "0xPallad1n0");
+
+        SolveChallenge challengeSolver = new SolveChallenge();
+        console.log("SolveChallenge address: %s",address(challengeSolver) );
+        console.log("Operator: %s", challengeSolver.nftOperator());
+        console.log("From: %s", challengeSolver.nftFrom());
+        console.log("TokenId: %s", challengeSolver.nftTokenId());
+        console.log("NFT Contract: %s", challengeSolver.nftContract());
         vm.stopBroadcast();
+
     }
+
 }
